@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllerGuard: Expert System for Food Allergy Management</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Add these in your HTML head or before your app.js -->
+<!-- Add these in your HTML <head> section -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h1>AllerGuard</h1>
+                        <p>Expert System for Food Allergy Management</p>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#" class="nav-link" data-section="symptom-checker"><i class="fas fa-heartbeat"></i> Symptom Checker</a></li>
+                        <li><a href="#" class="nav-link" data-section="allergy-info"><i class="fas fa-allergies"></i> Allergens</a></li>
+                        <li><a href="#" class="nav-link" data-section="allergy-log"><i class="fas fa-clipboard-list"></i> Allergy Log</a></li>
+                        <li><a href="#" class="nav-link" data-section="emergency"><i class="fas fa-first-aid"></i> Emergency</a></li>
+                    </ul>
+                </nav>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h2>Manage Your Food Allergies with Confidence</h2>
+                    <p>AllerGuard is an expert system designed to help you identify potential food allergens, track reactions, and get personalized recommendations for managing your food allergies.</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-primary" data-section="symptom-checker">
+                            <i class="fas fa-stethoscope"></i> Check Symptoms
+                        </button>
+                        <button class="btn btn-secondary" data-section="allergy-info">
+                            <i class="fas fa-allergies"></i> Learn About Allergens
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Alert -->
+            <div class="emergency-alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Emergency Notice:</strong> If you're experiencing severe allergic reactions like difficulty breathing, swelling of the throat, or dizziness, seek immediate medical attention or call emergency services.
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features">
+                <h3>How AllerGuard Helps You</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h4>Symptom Analysis</h4>
+                        <p>Our expert system analyzes your symptoms to identify potential allergens and provide personalized recommendations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h4>Allergen Database</h4>
+                        <p>Access comprehensive information about common food allergens, symptoms, and cross-reactivity.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Track & Monitor</h4>
+                        <p>Log your allergic reactions over time to identify patterns and triggers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4>Expert Advice</h4>
+                        <p>Get evidence-based recommendations for managing your food allergies.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Symptom Checker Section -->
+        <section id="symptom-checker" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-stethoscope"></i> Symptom Checker</h2>
+                <p>Select the symptoms you're experiencing to get an assessment of potential allergens and recommended actions.</p>
+            </div>
+
+            <div class="symptom-checker-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Select Your Symptoms</h3>
+                        <p>Click on symptoms you're currently experiencing</p>
+                    </div>
+                    <div class="symptom-options" id="symptomOptions">
+                        <!-- Symptoms will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="selected-symptoms" id="selectedSymptoms">
+                        <h4>Selected Symptoms: <span id="selectedCount">0</span></h4>
+                        <div id="selectedList"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="analyzeBtn">
+                            <i class="fas fa-search"></i> Analyze Symptoms
+                        </button>
+                        <button class="btn btn-secondary" id="clearBtn">
+                            <i class="fas fa-eraser"></i> Clear Selection
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Analysis Results</h3>
+                        <p>Based on your selected symptoms</p>
+                    </div>
+                    <div class="result-area" id="analysisResult">
+                        <div class="placeholder-result">
+                            <div class="placeholder-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <p>Select symptoms and click "Analyze Symptoms" to get personalized recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Allergy Info Section -->
+        <section id="allergy-info" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-allergies"></i> Common Food Allergens</h2>
+                <p>Learn about the most common food allergens and their typical symptoms.</p>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="allergenSearch" placeholder="Search for allergens or symptoms...">
+                </div>
+            </div>
+
+            <div class="allergen-grid" id="allergenGrid">
+                <!-- Allergens will be populated by JavaScript -->
+            </div>
+
+            <div class="allergen-detail-modal" id="allergenDetailModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalAllergenName"></h3>
+                        <button class="close-modal" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-section">
+                            <h4><i class="fas fa-exclamation-circle"></i> Common Symptoms</h4>
+                            <ul id="modalSymptoms"></ul>
+                        </div>
+                        <div class="modal-section">
+                            <h4><i class="fas fa-utensils"></i> Foods to Avoid</h4>
+                            <ul id="modalFoods"></ul>
+                        </div>
+                        <div class="modal-section">
+                            <h4><i class="fas fa-lightbulb"></i> Management Tips</h4>
+                            <ul id="modalTips"></ul>
+                        </div>
+                        <div class="modal-section">
+                            <h4><i class="fas fa-exchange-alt"></i> Cross-Reactivity</h4>
+                            <p id="modalCrossReactivity"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Allergy Log Section -->
+        <section id="allergy-log" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-clipboard-list"></i> Allergy Log</h2>
+                <p>Track and monitor your allergic reactions over time.</p>
+            </div>
+
+            <div class="log-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Add New Log Entry</h3>
+                        <p>Record details of an allergic reaction</p>
+                    </div>
+                    <form id="logForm">
+                        <div class="form-group">
+                            <label for="logDate"><i class="far fa-calendar"></i> Date of Reaction</label>
+                            <input type="date" id="logDate" required value="">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="logAllergen"><i class="fas fa-allergies"></i> Suspected Allergen</label>
+                            <select id="logAllergen" required>
+                                <option value="">Select an allergen</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-heartbeat"></i> Symptoms Experienced</label>
+                            <div class="symptom-checkboxes" id="logSymptoms">
+                                <!-- Symptoms will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="logSeverity"><i class="fas fa-chart-line"></i> Reaction Severity</label>
+                            <div class="severity-options">
+                                <label class="severity-option">
+                                    <input type="radio" name="severity" value="mild" required>
+                                    <span class="severity-indicator mild">Mild</span>
+                                </label>
+                                <label class="severity-option">
+                                    <input type="radio" name="severity" value="moderate">
+                                    <span class="severity-indicator moderate">Moderate</span>
+                                </label>
+                                <label class="severity-option">
+                                    <input type="radio" name="severity" value="severe">
+                                    <span class="severity-indicator severe">Severe</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="logNotes"><i class="fas fa-sticky-note"></i> Additional Notes</label>
+                            <textarea id="logNotes" rows="3" placeholder="Any additional details about the reaction..."></textarea>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Entry
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent Log Entries</h3>
+                        <p>Your allergy reaction history</p>
+                    </div>
+                    <div class="log-entries" id="logEntries">
+                        <!-- Log entries will be populated by JavaScript -->
+                    </div>
+                    <div class="log-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="totalEntries">0</span>
+                            <span class="stat-label">Total Entries</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="mostCommonAllergen">-</span>
+                            <span class="stat-label">Most Common Allergen</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="lastReaction">-</span>
+                            <span class="stat-label">Last Reaction</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Section -->
+        <section id="emergency" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-first-aid"></i> Emergency Guidelines</h2>
+                <p>What to do in case of an allergic reaction</p>
+            </div>
+
+            <div class="emergency-container">
+                <div class="card emergency-card severe">
+                    <div class="emergency-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Severe Reaction (Anaphylaxis)</h3>
+                    </div>
+                    <div class="emergency-steps">
+                        <ol>
+                            <li><strong>Use epinephrine auto-injector</strong> immediately if available</li>
+                            <li><strong>Call emergency services</strong> (911 or local emergency number)</li>
+                            <li><strong>Lie down</strong> with legs elevated</li>
+                            <li><strong>Do not stand or walk</strong> if feeling dizzy or lightheaded</li>
+                            <li><strong>A second dose</strong> may be needed after 5-15 minutes</li>
+                        </ol>
+                    </div>
+                    <div class="emergency-actions">
+                        <button class="btn btn-emergency" id="callEmergency">
+                            <i class="fas fa-phone-alt"></i> Call Emergency Services
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card emergency-card moderate">
+                    <div class="emergency-header">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Moderate Reaction</h3>
+                    </div>
+                    <div class="emergency-steps">
+                        <ol>
+                            <li><strong>Take antihistamines</strong> as prescribed by your doctor</li>
+                            <li><strong>Monitor symptoms closely</strong> for any worsening</li>
+                            <li><strong>Contact your doctor</strong> or healthcare provider</li>
+                            <li><strong>Have epinephrine ready</strong> in case symptoms worsen</li>
+                            <li><strong>Avoid suspected allergen</strong> completely</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="card emergency-card mild">
+                    <div class="emergency-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Mild Reaction</h3>
+                    </div>
+                    <div class="emergency-steps">
+                        <ol>
+                            <li><strong>Take antihistamines</strong> if recommended by your doctor</li>
+                            <li><strong>Monitor symptoms</strong> for 1-2 hours</li>
+                            <li><strong>Note what you ate</strong> for future reference</li>
+                            <li><strong>Contact your doctor</strong> if symptoms persist</li>
+                            <li><strong>Consider allergy testing</strong> to identify triggers</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="emergency-contacts">
+                <h3><i class="fas fa-address-book"></i> Emergency Contacts</h3>
+                <div class="contacts-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <h4>Emergency Services</h4>
+                        <p class="contact-number">911</p>
+                        <p class="contact-desc">Call for immediate medical assistance</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <h4>Poison Control</h4>
+                        <p class="contact-number">1-800-222-1222</p>
+                        <p class="contact-desc">24/7 poison and toxin assistance</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4>Your Allergist</h4>
+                        <p class="contact-number" id="allergistNumber">Add in settings</p>
+                        <button class="btn btn-small" id="addAllergist">
+                            <i class="fas fa-plus"></i> Add Contact
+                        </button>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <h4>Emergency Contact</h4>
+                        <p class="contact-number" id="emergencyContact">Add in settings</p>
+                        <button class="btn btn-small" id="addEmergencyContact">
+                            <i class="fas fa-plus"></i> Add Contact
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AllerGuard</h3>
+                    <p>An expert system designed to help individuals manage food allergies through identification, tracking, and personalized recommendations.</p>
+                    <div class="footer-logo">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-section="symptom-checker">Symptom Checker</a></li>
+                        <li><a href="#" data-section="allergy-info">Allergen Database</a></li>
+                        <li><a href="#" data-section="allergy-log">Allergy Log</a></li>
+                        <li><a href="#" data-section="emergency">Emergency Guidelines</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Disclaimer</h3>
+                    <p class="disclaimer">AllerGuard is an informational tool and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 AllerGuard - Expert System for Food Allergy Management. For educational purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/index.js"></script>
+</body>
+</html>
